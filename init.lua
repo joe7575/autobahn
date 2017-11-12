@@ -226,20 +226,26 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "autobahn:node2 4",
+	output = "autobahn:node2",
 	recipe = {
-		{"", "dye:white", ""},
-		{"building_blocks:Tar", "building_blocks:Tar", ""},
-		{"default:cobble", "default:cobble", ""},
+		{"", "", "dye:white"},
+		{"", "autobahn:node1", ""},
 	}
 })
 
 minetest.register_craft({
-	output = "autobahn:node3 4",
+	output = "autobahn:node3",
+	recipe = {
+		{"", "dye:white", ""},
+		{"", "autobahn:node1", ""},
+	}
+})
+
+minetest.register_craft({
+	output = "autobahn:node4",
 	recipe = {
 		{"dye:white", "", ""},
-		{"building_blocks:Tar", "building_blocks:Tar", ""},
-		{"default:cobble", "default:cobble", ""},
+		{"", "autobahn:node1", ""},
 	}
 })
 
