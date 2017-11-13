@@ -49,19 +49,22 @@ local function run_privs(player, enable)
 end
 
 local function control_player(player)
-	local pos = player:getpos()
-	--pos.y = math.floor(pos.y)
-	local node = minetest.get_node(pos)
-	if string.sub(node.name,1,13) == "autobahn:node" then
-		minetest.after(0.5, control_player, player)
-	else
-		pos.y = pos.y - 1
-		node = minetest.get_node(pos)
-		if string.sub(node.name,1,13) == "autobahn:node" then
-			minetest.after(0.5, control_player, player)
-		else
-			print(node.name)
-			run_privs(player, false)
+	if player then
+		local pos = player:getpos()
+		if pos then
+			--pos.y = math.floor(pos.y)
+			local node = minetest.get_node(pos)
+			if string.sub(node.name,1,13) == "autobahn:node" then
+				minetest.after(0.5, control_player, player)
+			else
+				pos.y = pos.y - 1
+				node = minetest.get_node(pos)
+				if string.sub(node.name,1,13) == "autobahn:node" then
+					minetest.after(0.5, control_player, player)
+				else
+					run_privs(player, false)
+				end
+			end
 		end
 	end
 end	
@@ -80,26 +83,26 @@ local NodeTbl2 = {
 	["autobahn:node41"] = true,
 }
 
---  1)   __o__
+--  1)   _o_
 --       /\  [?]        ==> 1
---     [T][T][S][S][S]		T..tar
+--     [T][T][S][S][S]      T..tar
 --     [S][S][S][S][S]      S..sand
 --
 --
---  2)   __o__
+--  2)   _o_
 --       /\  [1][?]     ==> 2
 --     [T][T][S][S][S]
 --     [S][S][S][S][S]
 --
 --
---  3)   __o__
+--  3)   _o_
 --       /\  [?]        ==> 1
 --     [S][S][S][T][T]
 --     [S][S][S][S][S]
 --
 --
---  4)   __o__
---       /\  [?][1]        ==> 2
+--  4)   _o_
+--       /\  [?][1]     ==> 2
 --     [S][S][S][T][T]
 --     [S][S][S][S][S]
 
