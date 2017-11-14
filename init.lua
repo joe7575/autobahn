@@ -203,6 +203,7 @@ local Nodes = {
 	{name="node2", tiles={"autobahn2.png","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node2"},
 	{name="node3", tiles={"autobahn3.png","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node3"},
 	{name="node4", tiles={"autobahn2.png^[transformR180]","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node4"},
+	{name="node5", tiles={"autobahn4.png^[transformR90]","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node5"},
 	
 	{name="node11", tiles={"autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node1"},
 	{name="node21", tiles={"autobahn2.png","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node2"},
@@ -220,6 +221,12 @@ for _,item in ipairs(Nodes) do
 end
 
 
+minetest.register_craftitem("autobahn:stripes", {
+	description = "Autobahn Stripe",
+	inventory_image = 'autobahn_stripes.png',
+})
+
+
 minetest.register_craft({
 	output = "autobahn:node1 4",
 	recipe = {
@@ -229,9 +236,17 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = "autobahn:stripes 8",
+	recipe = {
+		{"dye:white"},
+	}
+})
+
+
+minetest.register_craft({
 	output = "autobahn:node2",
 	recipe = {
-		{"", "", "dye:white"},
+		{"", "", "autobahn:stripes"},
 		{"", "autobahn:node1", ""},
 	}
 })
@@ -239,7 +254,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "autobahn:node3",
 	recipe = {
-		{"", "dye:white", ""},
+		{"", "autobahn:stripes", ""},
 		{"", "autobahn:node1", ""},
 	}
 })
@@ -247,8 +262,16 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "autobahn:node4",
 	recipe = {
-		{"dye:white", "", ""},
+		{"autobahn:stripes", "", ""},
 		{"", "autobahn:node1", ""},
+	}
+})
+
+minetest.register_craft({
+	output = "autobahn:node5",
+	recipe = {
+		{"", "", ""},
+		{"autobahn:stripes", "autobahn:node1", ""},
 	}
 })
 
