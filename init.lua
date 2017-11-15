@@ -75,6 +75,10 @@ local NodeTbl1 = {
 	["autobahn:node2"] = true,
 	["autobahn:node3"] = true,
 	["autobahn:node4"] = true,
+	["autobahn:node12"] = true,
+	["autobahn:node22"] = true,
+	["autobahn:node32"] = true,
+	["autobahn:node42"] = true,
 }
 local NodeTbl2 = {
 	["autobahn:node11"] = true,
@@ -204,6 +208,7 @@ local Nodes = {
 	{name="node3", tiles={"autobahn3.png","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node3"},
 	{name="node4", tiles={"autobahn2.png^[transformR180]","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node4"},
 	{name="node5", tiles={"autobahn4.png^[transformR90]","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node5"},
+	{name="node6", tiles={"autobahn5.png^[transformR90]","autobahn1.png"}, drawtype="normal", mesh=nil, box=nil, drop="node6"},
 	
 	{name="node11", tiles={"autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node1"},
 	{name="node21", tiles={"autobahn2.png","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node2"},
@@ -271,6 +276,14 @@ minetest.register_craft({
 	output = "autobahn:node5",
 	recipe = {
 		{"", "", ""},
+		{"autobahn:stripes", "autobahn:node1", ""},
+	}
+})
+
+minetest.register_craft({
+	output = "autobahn:node6",
+	recipe = {
+		{"", "autobahn:stripes", ""},
 		{"autobahn:stripes", "autobahn:node1", ""},
 	}
 })
