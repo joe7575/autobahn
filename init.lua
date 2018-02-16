@@ -26,10 +26,7 @@ local function run_privs(player, enable)
 	local res = false
 	if privs then
 		if player:get_attribute("autobahn_active") == nil and enable then
-			player:set_attribute("store_fast", minetest.serialize(privs["fast"]))
-			player:set_attribute("store_speed", minetest.serialize(physics.speed))
 			player:set_attribute("autobahn_active", "true")
-			privs["fast"] = true
 			physics.speed = 3
 			minetest.sound_play("motor", {
 					pos = pos,
@@ -38,8 +35,7 @@ local function run_privs(player, enable)
 				})
 			res = true
 		else
-			privs["fast"] = minetest.deserialize(player:get_attribute("store_fast"))
-			physics.speed = minetest.deserialize(player:get_attribute("store_speed"))
+			physics.speed = minetest.deserialize(player:get_attribute("autobahn_store_speed"))
 			player:set_attribute("autobahn_active", nil)
 		end
 		player:set_physics_override(physics)
@@ -287,6 +283,13 @@ minetest.register_craft({
 		{"autobahn:stripes", "autobahn:node1", ""},
 	}
 })
+
+-- store standard player privs
+minetest.register_on_joinplayer(function(player)
+	local privs = minetest.get_player_privs(player:get_player_name())
+	local physics = player:get_physics_override()
+	player:set_attribute("autobahn_store_speed", minetest.serialize(physics.speed))
+end)
 
 -- switch back to normal player privs
 minetest.register_on_leaveplayer(function(player, timed_out)
