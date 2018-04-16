@@ -284,15 +284,30 @@ minetest.register_craft({
 	}
 })
 
+
 -- store standard player privs
 minetest.register_on_joinplayer(function(player)
 	local privs = minetest.get_player_privs(player:get_player_name())
 	local physics = player:get_physics_override()
+	print("Reset to standard")
+	privs["fly"] = nil
+	privs["fast"] = nil
+	physics.speed = 1
+	player:set_physics_override(physics)
+	minetest.set_player_privs(player:get_player_name(), privs)	
 	player:set_attribute("autobahn_store_speed", minetest.serialize(physics.speed))
 end)
 
 -- switch back to normal player privs
 minetest.register_on_leaveplayer(function(player, timed_out)
 	run_privs(player, false)
+	local privs = minetest.get_player_privs(player:get_player_name())
+	local physics = player:get_physics_override()
+	print("Reset to standard")
+	privs["fly"] = nil
+	privs["fast"] = nil
+	physics.speed = 1
+	player:set_physics_override(physics)
+	minetest.set_player_privs(player:get_player_name(), privs)	
 end)
 
