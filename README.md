@@ -4,7 +4,6 @@ tbd.
 
 ## Dependencies
 default  
-homedecor
 
 # License
 Copyright (C) 2017 Joachim Stolberg  
