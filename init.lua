@@ -2,14 +2,18 @@
 
 	Autobahn
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 	LGPLv2.1+
 	See LICENSE.txt for more information
 
 	History:
 	2017-11-11  v0.01  first version
+	2019-09-13  v0.02  adapted to 5.0.0
+	2020-03-19  v0.03  recipe added for techage bitumen
 
 ]]--
+
+autobahn = {}
 
 local Facedir2Dir = {[0] = 
 	{x=0,  y=0,  z=1},
@@ -18,35 +22,72 @@ local Facedir2Dir = {[0] =
 	{x=-1, y=0,  z=0},
 }
 
--- give/take player the necessary privs/physics
-local function run_privs(player, enable)
-	local pos = player:getpos()
-	local privs = minetest.get_player_privs(player:get_player_name())
-	local physics = player:get_physics_override()
-	local res = false
-	if privs then
-		if player:get_attribute("autobahn_active") == nil and enable then
-			player:set_attribute("autobahn_active", "true")
-			physics.speed = 3
-			minetest.sound_play("motor", {
-					pos = pos,
-					gain = 0.5,
-					max_hear_distance = 5,
-				})
-			res = true
-		else
-			physics.speed = minetest.deserialize(player:get_attribute("autobahn_store_speed"))
-			player:set_attribute("autobahn_active", nil)
-		end
-		player:set_physics_override(physics)
-		minetest.set_player_privs(player:get_player_name(), privs)
+-- To prevent race condition crashes
+local Currently_left_the_game = {}
+
+local function is_active(player)
+    local pl_meta = player:get_meta()
+	if not pl_meta or pl_meta:get_int("autobahn_isactive") ~= 1 then
+		return false
 	end
-	return res
+	return true
 end
 
+local function set_player_privs(player)
+	local physics = player:get_physics_override()
+	local meta = player:get_meta()
+	if meta and physics then
+		-- store the player privs default values
+		meta:set_int("autobahn_speed", physics.speed)
+		-- set operator privs
+		meta:set_int("autobahn_isactive", 1)
+		physics.speed = 3.5
+		minetest.sound_play("autobahn_motor", {
+				pos = player:get_pos(),
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		-- write back
+		player:set_physics_override(physics)
+	end
+end
+
+local function reset_player_privs(player)
+	local physics = player:get_physics_override()
+	local meta = player:get_meta()
+	if meta and physics then
+		-- restore the player privs default values
+		meta:set_int("autobahn_isactive", 0)
+		physics.speed = meta:get_int("autobahn_speed")
+		if physics.speed == 0 then physics.speed = 1 end
+		-- delete stored default values
+		meta:set_string("autobahn_speed", "")
+		-- write back
+		player:set_physics_override(physics)
+	end
+end
+
+minetest.register_on_joinplayer(function(player)
+	if is_active(player) then
+		reset_player_privs(player)
+	end
+end)
+
+minetest.register_on_leaveplayer(function(player)
+	if is_active(player) then
+		Currently_left_the_game[player:get_player_name()] = true
+	end
+end)
+
+
 local function control_player(player)
+	local player_name = player:get_player_name()
+	if Currently_left_the_game[player_name] then
+		Currently_left_the_game[player_name] = nil
+		return
+	end
 	if player then
-		local pos = player:getpos()
+		local pos = player:get_pos()
 		if pos then
 			--pos.y = math.floor(pos.y)
 			local node = minetest.get_node(pos)
@@ -58,7 +99,7 @@ local function control_player(player)
 				if string.sub(node.name,1,13) == "autobahn:node" then
 					minetest.after(0.5, control_player, player)
 				else
-					run_privs(player, false)
+					reset_player_privs(player)
 				end
 			end
 		end
@@ -172,7 +213,10 @@ local function register_node(name, tiles, drawtype, mesh, box, drop)
 		end,
 		
 		on_rightclick = function(pos, node, clicker)
-			if run_privs(clicker, true) then
+			if is_active(clicker) then
+				reset_player_privs(clicker)
+			else
+				set_player_privs(clicker)
 				minetest.after(0.5, control_player, clicker)
 			end
 		end,
@@ -228,13 +272,34 @@ minetest.register_craftitem("autobahn:stripes", {
 })
 
 
-minetest.register_craft({
-	output = "autobahn:node1 4",
-	recipe = {
-		{"building_blocks:Tar", "building_blocks:Tar"},
-		{"default:cobble", "default:cobble"},
-	}
-})
+if minetest.global_exists("techage") then	
+	minetest.register_craft({
+		output = "autobahn:node1 9",
+		recipe = {
+			{"techage:sieved_basalt_gravel", "techage:sieved_basalt_gravel", "techage:sieved_basalt_gravel"},
+			{"techage:sieved_basalt_gravel", "techage:ta3_barrel_bitumen", "techage:sieved_basalt_gravel"},
+			{"techage:sieved_basalt_gravel", "techage:sieved_basalt_gravel", "techage:sieved_basalt_gravel"},
+		},
+		replacements = {{"techage:ta3_barrel_bitumen", "techage:ta3_barrel_empty"}},
+	})
+	minetest.register_craft({
+		output = "autobahn:node1 9",
+		recipe = {
+			{"techage:sieved_gravel", "techage:sieved_gravel", "techage:sieved_gravel"},
+			{"techage:sieved_gravel", "techage:ta3_barrel_bitumen", "techage:sieved_gravel"},
+			{"techage:sieved_gravel", "techage:sieved_gravel", "techage:sieved_gravel"},
+		},
+		replacements = {{"techage:ta3_barrel_bitumen", "techage:ta3_barrel_empty"}},
+	})
+elseif minetest.global_exists("moreblocks") then
+	minetest.register_craft({
+		output = "autobahn:node1 4",
+		recipe = {
+			{"moreblocks:tar", "moreblocks:tar"},
+			{"default:cobble", "default:cobble"},
+		},
+	})
+end
 
 minetest.register_craft({
 	output = "autobahn:stripes 8",
@@ -284,30 +349,28 @@ minetest.register_craft({
 	}
 })
 
+if minetest.global_exists("minecart") then
+	minecart.register_protected_node("autobahn:node1")
+	minecart.register_protected_node("autobahn:node2")	
+	minecart.register_protected_node("autobahn:node3")	
+	minecart.register_protected_node("autobahn:node4")	
+	minecart.register_protected_node("autobahn:node5")	
+	minecart.register_protected_node("autobahn:node6")	
+	minecart.register_protected_node("autobahn:node11")	
+	minecart.register_protected_node("autobahn:node21")	
+	minecart.register_protected_node("autobahn:node31")	
+	minecart.register_protected_node("autobahn:node41")	
+	minecart.register_protected_node("autobahn:node12")	
+	minecart.register_protected_node("autobahn:node22")	
+	minecart.register_protected_node("autobahn:node32")	
+	minecart.register_protected_node("autobahn:node42")	
+end	
 
--- store standard player privs
-minetest.register_on_joinplayer(function(player)
-	local privs = minetest.get_player_privs(player:get_player_name())
-	local physics = player:get_physics_override()
-	print("Reset to standard")
-	privs["fly"] = nil
-	privs["fast"] = nil
-	physics.speed = 1
-	player:set_physics_override(physics)
-	minetest.set_player_privs(player:get_player_name(), privs)	
-	player:set_attribute("autobahn_store_speed", minetest.serialize(physics.speed))
-end)
 
--- switch back to normal player privs
-minetest.register_on_leaveplayer(function(player, timed_out)
-	run_privs(player, false)
-	local privs = minetest.get_player_privs(player:get_player_name())
-	local physics = player:get_physics_override()
-	print("Reset to standard")
-	privs["fly"] = nil
-	privs["fast"] = nil
-	physics.speed = 1
-	player:set_physics_override(physics)
-	minetest.set_player_privs(player:get_player_name(), privs)	
-end)
+-------------------------------------------------------------------------------
+-- External API functions
+-------------------------------------------------------------------------------
 
+-- Returns true if player is "driving" on the autobahn
+--   func autobahn.is_driving(player)
+autobahn.is_driving = is_active
