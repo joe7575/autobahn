@@ -3,7 +3,7 @@
 	Autobahn
 
 	Copyright (C) 2017-2020 Joachim Stolberg
-	LGPLv2.1+
+	GPL v3
 	See LICENSE.txt for more information
 
 	History:

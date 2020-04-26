@@ -1,9 +1,9 @@
 # Autobahn Mod
 
 Street blocks with stripes and slope blocks. Allows faster traveling.
-For the recipe bitumen or tar is needed.
-Thats the reason why the mod techage or moreblocks should be installed.
+For the recipe bitumen or tar is needed from the mods techage or moreblocks.
 
+![autobahn](https://github.com/joe7575/autobahn/blob/master/screenshot.png)
 
 ## Dependencies
 default  
@@ -11,7 +11,7 @@ Optional: moreblocks, techage, minecart
 
 # License
 Copyright (C) 2017-2020 Joachim Stolberg  
-Code: Licensed under the GNU LGPL version 2.1 or later.  
-See LICENSE.txt and http://www.gnu.org/licenses/lgpl-2.1.txt  
-Textures: CC0
+Code: Licensed under the GNU GPL version 3 or later. See LICENSE.txt  
+Textures: CC BY-SA 3.0
+
 
