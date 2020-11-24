@@ -92,24 +92,24 @@ minetest.register_on_respawnplayer(function(player)
 	end
 end)
 
-local function control_player(player)
-	local player_name = player:get_player_name()
+local function control_player(player_name)
 	if Currently_left_the_game[player_name] then
 		Currently_left_the_game[player_name] = nil
 		return
 	end
+	local player = minetest.get_player_by_name(player_name)
 	if player then
 		local pos = player:get_pos()
 		if pos then
 			--pos.y = math.floor(pos.y)
 			local node = minetest.get_node(pos)
 			if string.sub(node.name,1,13) == "autobahn:node" then
-				minetest.after(0.5, control_player, player)
+				minetest.after(0.5, control_player, player_name)
 			else
 				pos.y = pos.y - 1
 				node = minetest.get_node(pos)
 				if string.sub(node.name,1,13) == "autobahn:node" then
-					minetest.after(0.5, control_player, player)
+					minetest.after(0.5, control_player, player_name)
 				else
 					reset_player_privs(player)
 				end
@@ -227,7 +227,9 @@ local function register_node(name, tiles, drawtype, mesh, box, drop)
 		sunlight_propagates = true,
 		sounds = default.node_sound_stone_defaults(),
 		is_ground_content = false,
-		groups = {cracky=2, crumbly=2, not_in_creative_inventory=(mesh==nil) and 0 or 1},
+		groups = {cracky=2, crumbly=2, 
+			fall_damage_add_percent = -80,
+			not_in_creative_inventory=(mesh==nil) and 0 or 1},
 		drop = "autobahn:"..drop,
 
 		after_place_node = function(pos, placer, itemstack, pointed_thing)
@@ -239,7 +241,8 @@ local function register_node(name, tiles, drawtype, mesh, box, drop)
 				reset_player_privs(clicker)
 			else
 				set_player_privs(clicker)
-				minetest.after(0.5, control_player, clicker)
+				local player_name = clicker:get_player_name()
+				minetest.after(0.5, control_player, player_name)
 			end
 		end,
 	})
