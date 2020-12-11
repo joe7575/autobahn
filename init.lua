@@ -125,11 +125,13 @@ local NodeTbl1 = {
 	["autobahn:node3"] = true,
 	["autobahn:node4"] = true,
 	["autobahn:node5"] = true,
+	["autobahn:node6"] = true,
 	["autobahn:node12"] = true,
 	["autobahn:node22"] = true,
 	["autobahn:node32"] = true,
 	["autobahn:node42"] = true,
 	["autobahn:node52"] = true,
+	["autobahn:node62"] = true,
 }
 local NodeTbl2 = {
 	["autobahn:node11"] = true,
@@ -137,6 +139,7 @@ local NodeTbl2 = {
 	["autobahn:node31"] = true,
 	["autobahn:node41"] = true,
 	["autobahn:node51"] = true,
+	["autobahn:node61"] = true,
 }
 local NodeTbl3 = {
 	["autobahn:node1"] = true,
@@ -144,6 +147,7 @@ local NodeTbl3 = {
 	["autobahn:node3"] = true,
 	["autobahn:node4"] = true,
 	["autobahn:node5"] = true,
+	["autobahn:node6"] = true,
 }
 
 --  1)   _o_
@@ -280,12 +284,14 @@ local Nodes = {
 	{name="node31", tiles={"autobahn3.png","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node3"},
 	{name="node41", tiles={"autobahn2.png^[transformR180]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node4"},
 	{name="node51", tiles={"autobahn4.png^[transformR90]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node5"},
+	{name="node61", tiles={"autobahn5.png^[transformR90]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp1.obj", box=sb1, drop="node6"},
 	
 	{name="node12", tiles={"autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node1"},
 	{name="node22", tiles={"autobahn2.png","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node2"},
 	{name="node32", tiles={"autobahn3.png","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node3"},
 	{name="node42", tiles={"autobahn2.png^[transformR180]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node4"},
 	{name="node52", tiles={"autobahn4.png^[transformR90]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node5"},
+	{name="node62", tiles={"autobahn5.png^[transformR90]","autobahn1.png"}, drawtype="mesh", mesh="autobahn_ramp2.obj", box=sb2, drop="node6"},
 }
 
 for _,item in ipairs(Nodes) do
@@ -408,10 +414,14 @@ if minetest.global_exists("minecart") then
 	minecart.register_protected_node("autobahn:node21")	
 	minecart.register_protected_node("autobahn:node31")	
 	minecart.register_protected_node("autobahn:node41")	
+	minecart.register_protected_node("autobahn:node51")	
+	minecart.register_protected_node("autobahn:node61")	
 	minecart.register_protected_node("autobahn:node12")	
 	minecart.register_protected_node("autobahn:node22")	
 	minecart.register_protected_node("autobahn:node32")	
 	minecart.register_protected_node("autobahn:node42")	
+	minecart.register_protected_node("autobahn:node52")	
+	minecart.register_protected_node("autobahn:node62")	
 end	
 
 
