@@ -7,7 +7,7 @@ For the recipe bitumen or tar is needed from the mods techage or moreblocks.
 
 ## Dependencies
 default  
-Optional: moreblocks, techage, minecart
+Optional: moreblocks, techage, minecart, player_monoids
 
 # License
 Copyright (C) 2017-2021 Joachim Stolberg

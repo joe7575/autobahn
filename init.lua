@@ -38,6 +38,9 @@ local function is_active(player)
 	return true
 end
 
+-- Player monoids support
+local has_monoids = minetest.global_exists("player_monoids")
+
 local function set_player_privs(player)
 	local physics = player:get_physics_override()
 	local meta = player:get_meta()
@@ -45,16 +48,20 @@ local function set_player_privs(player)
 	if meta:get_int("player_physics_locked") == 0 then
 		meta:set_int("player_physics_locked", 1)
 		if meta and physics then
-			-- store the player privs default values
-			meta:set_int("autobahn_speed", physics.speed)
 			-- set operator privs
 			meta:set_int("autobahn_isactive", 1)
-			physics.speed = 3.5
 			minetest.sound_play("autobahn_motor", {
-					pos = player:get_pos(),
-					gain = 0.5,
-					max_hear_distance = 5,
-				})
+				pos = player:get_pos(),
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		end
+		if meta and physics and has_monoids then
+			player_monoids.speed:add_change(player, 3.5, "autobahn:speed")
+		elseif meta and physics then
+			-- store the player privs default values
+			meta:set_int("autobahn_speed", physics.speed)
+			physics.speed = 3.5
 			-- write back
 			player:set_physics_override(physics)
 		end
@@ -67,13 +74,17 @@ local function reset_player_privs(player)
 	if meta and physics then
 		-- restore the player privs default values
 		meta:set_int("autobahn_isactive", 0)
+		meta:set_int("player_physics_locked", 0)
+	end
+	if meta and physics and has_monoids then
+		player_monoids.speed:del_change(player, "autobahn:speed")
+	elseif meta and physics then
 		physics.speed = meta:get_int("autobahn_speed")
 		if physics.speed == 0 then physics.speed = 1 end
 		-- delete stored default values
 		meta:set_string("autobahn_speed", "")
 		-- write back
 		player:set_physics_override(physics)
-		meta:set_int("player_physics_locked", 0)
 	end
 end
 
